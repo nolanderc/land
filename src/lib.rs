@@ -1,3 +1,8 @@
+#![cfg_attr(feature = "unstable", feature(test))]
+
+mod matrix;
+mod ops;
+
 #[cfg(test)]
 mod tests {
     #[test]
@@ -5,3 +10,4 @@ mod tests {
         assert_eq!(2 + 2, 4);
     }
 }
+
