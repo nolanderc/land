@@ -1,13 +1,9 @@
-#![cfg_attr(feature = "unstable", feature(test))]
+#[macro_use]
+mod macros;
 
 mod matrix;
-mod ops;
+mod vector;
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
-}
+mod ops;
+mod traits;
 
