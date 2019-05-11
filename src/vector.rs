@@ -112,6 +112,9 @@ where
     /// Elementwise base 10 logarithm
     impl_elementwise_operation!(log10());
 
+    /// Elementwise reciprocal: `1/(self)`
+    impl_elementwise_operation!(recip());
+
     /// Raise to the power of an integer power elementwise
     impl_elementwise_operation!(powi(n: i32));
 
