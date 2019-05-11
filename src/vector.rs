@@ -95,6 +95,12 @@ where
     /// - `F::nan()` if the number is `F::nan()`.
     impl_elementwise_operation!(signum());
 
+    /// Elementwise maximum of two values
+    impl_elementwise_operation!(max(other: F));
+
+    /// Elementwise minimum of two values
+    impl_elementwise_operation!(min(other: F));
+
     /// Elementwise natural logarithm
     impl_elementwise_operation!(ln());
 
