@@ -97,6 +97,56 @@ macro_rules! impl_elementwise {
 impl_elementwise!(Add, add);
 impl_elementwise!(Sub, sub);
 
+macro_rules! impl_scalar_ops {
+    ($trait:ident, $fn:ident, ($($scalar:ty),+)) => (
+        $(
+            impl_scalar_ops!($trait, $fn, $scalar);
+        )+
+    );
+
+    ($trait:ident, $fn:ident, $scalar:ty) => (
+        impl $trait<$scalar> for Vector<$scalar> {
+            type Output = Vector<$scalar>;
+
+            fn $fn(mut self, rhs: $scalar) -> Self::Output {
+                for i in 0..self.len() {
+                    self[i] = self[i].$fn(rhs);
+                }
+
+                self
+            }
+        }
+
+        impl $trait<Vector<$scalar>> for $scalar {
+            type Output = Vector<$scalar>;
+
+            fn $fn(self, mut rhs: Vector<$scalar>) -> Self::Output {
+                for i in 0..rhs.len() {
+                    rhs[i] = self.$fn(rhs[i]);
+                }
+
+                rhs
+            }
+        }
+    );
+}
+
+impl_scalar_ops!(
+    Add,
+    add,
+    (i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64)
+);
+impl_scalar_ops!(
+    Sub,
+    sub,
+    (i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64)
+);
+impl_scalar_ops!(
+    Mul,
+    mul,
+    (i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64)
+);
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -141,5 +191,33 @@ mod tests {
         assert_eq!(move_ref, ref_move);
         assert_eq!(move_ref, move_move);
         assert_eq!(move_ref, mat![1 - 1, 2 - 2, 3 - 2]);
+    }
+
+    #[test]
+    fn vec_add_scalar() {
+        let a = mat![1, 2, 3];
+        let result = a + 1;
+        assert_eq!(result, mat![2, 3, 4]);
+    }
+
+    #[test]
+    fn scalar_add_vec() {
+        let a = mat![1, 2, 3];
+        let result = 1 + a;
+        assert_eq!(result, mat![2, 3, 4]);
+    }
+
+    #[test]
+    fn vec_mul_scalar() {
+        let a = mat![1, 2, 3];
+        let result = a * 2;
+        assert_eq!(result, mat![2, 4, 6]);
+    }
+
+    #[test]
+    fn scalar_mul_vec() {
+        let a = mat![1, 2, 3];
+        let result = 2 * a;
+        assert_eq!(result, mat![2, 4, 6]);
     }
 }

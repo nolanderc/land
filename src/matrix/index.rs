@@ -22,6 +22,32 @@ where
     }
 }
 
+
+impl<S> Index<[usize; 2]> for Matrix<S>
+where
+    S: Scalar,
+{
+    type Output = S;
+
+    /// Get a row of the matrix.
+    fn index(&self, [row, col]: [usize; 2]) -> &Self::Output {
+        let index = self.dimensions.row_major(row, col);
+        self.elements.index(index)
+    }
+}
+
+impl<S> IndexMut<[usize; 2]> for Matrix<S>
+where
+    S: Scalar,
+{
+    /// Get a row of the matrix.
+    fn index_mut(&mut self, [row, col]: [usize; 2]) -> &mut Self::Output {
+        let index = self.dimensions.row_major(row, col);
+        self.elements.index_mut(index)
+    }
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;

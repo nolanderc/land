@@ -11,7 +11,7 @@ where
 
         for col in 0..self.dimensions.cols {
             for row in 0..self.dimensions.rows {
-                out[col][row] = self[row][col];
+                out[[col, row]] = self[[row, col]];
             }
         }
 
