@@ -1,23 +1,28 @@
-use std::ops::*;
+pub(crate) mod operations;
 
+use std::ops::*;
 use crate::traits::Scalar;
 
 #[derive(Debug, Clone)]
 pub struct Vector<S> {
-    pub(crate) data: Vec<S>,
+    elements: Vec<S>,
 }
 
 impl<S> Vector<S> {
+    pub fn new(elements: Vec<S>) -> Vector<S> {
+        Vector { elements }
+    }
+
     pub fn len(&self) -> usize {
-        self.data.len()
+        self.elements.len()
     }
 
     pub fn iter(&self) -> impl Iterator<Item=&S> {
-        self.data.iter()
+        self.elements.iter()
     }
 
     pub fn iter_mut(&mut self) -> impl Iterator<Item=&mut S> {
-        self.data.iter_mut()
+        self.elements.iter_mut()
     }
 }
 
@@ -28,7 +33,7 @@ where
     /// A vector filled with a value.
     pub fn filled(value: S, len: usize) -> Vector<S> {
         Vector {
-            data: vec![value; len],
+            elements: vec![value; len],
         }
     }
 }
@@ -53,19 +58,27 @@ where
     S: Scalar + PartialEq,
 {
     fn eq(&self, other: &Self) -> bool {
-        self.data == other.data
+        self.elements == other.elements
     }
 }
 
 impl<S, V> From<V> for Vector<S> where V: Into<Vec<S>> {
-    fn from(data: V) -> Self {
-        Vector { data: data.into() }
+    fn from(elements: V) -> Self {
+        Vector { elements: elements.into() }
+    }
+}
+
+impl<S> Deref for Vector<S> {
+    type Target = Vec<S>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.elements
     }
 }
 
 impl<S> AsRef<[S]> for Vector<S> {
     fn as_ref(&self) -> &[S] {
-        &self.data
+        &self.elements
     }
 }
 
@@ -74,13 +87,13 @@ impl<S> Index<usize> for Vector<S> {
     type Output = S;
 
     fn index(&self, index: usize) -> &S {
-        self.data.index(index)
+        self.elements.index(index)
     }
 }
 
 impl<S> IndexMut<usize> for Vector<S> {
     fn index_mut(&mut self, index: usize) -> &mut S {
-        self.data.index_mut(index)
+        self.elements.index_mut(index)
     }
 }
 
@@ -90,16 +103,16 @@ mod tests {
 
     #[test]
     fn create_filled_vector() {
-        assert_eq!(Vector::<i32>::filled(2, 3), Vector { data: vec![2; 3] })
+        assert_eq!(Vector::<i32>::filled(2, 3), Vector { elements: vec![2; 3] })
     }
 
     #[test]
     fn create_zero_vector() {
-        assert_eq!(Vector::<i32>::zeros(3), Vector { data: vec![0; 3] })
+        assert_eq!(Vector::<i32>::zeros(3), Vector { elements: vec![0; 3] })
     }
 
     #[test]
     fn create_one_vector() {
-        assert_eq!(Vector::<i32>::ones(3), Vector { data: vec![1; 3] })
+        assert_eq!(Vector::<i32>::ones(3), Vector { elements: vec![1; 3] })
     }
 }

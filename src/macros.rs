@@ -6,5 +6,9 @@ macro_rules! mat {
                 vec![$($elem),+].into()
             ),+
         ])
+    };
+
+    [$($elem:expr),+] => {
+        Vector::new(vec![ $( $elem ),+ ])
     }
 }

@@ -1,4 +1,5 @@
 use super::*;
+use crate::vector::{Vector, operations::dot};
 
 impl<S> Matrix<S>
 where
@@ -16,16 +17,6 @@ where
 
         out
     }
-}
-
-pub fn dot<S>(lhs: &[S], rhs: &[S]) -> S
-where
-    S: Scalar,
-{
-    lhs.iter()
-        .zip(rhs)
-        .map(|(&a, &b)| a * b)
-        .fold(S::zero(), |acc, t| acc + t)
 }
 
 // Matrix-Matrix Multiplication
@@ -67,14 +58,14 @@ where
 }
 
 // Matrix-Vector Multiplication
-impl<S> Mul<&[S]> for &Matrix<S>
+impl<S> Mul<&Vector<S>> for &Matrix<S>
 where
     S: Scalar,
 {
-    type Output = Vec<S>;
+    type Output = Vector<S>;
 
     // Standard matrix multiplication
-    fn mul(self, rhs: &[S]) -> Vec<S> {
+    fn mul(self, rhs: &Vector<S>) -> Vector<S> {
         assert!(
             self.dimensions.cols == rhs.len(),
             "Matrix dimensions must agree. Left hand side is {} and right hand side has length {}",
@@ -87,23 +78,10 @@ where
         for row in 0..self.dimensions.rows {
             let lhs_row = &self[row];
 
-            out[row] = dot(lhs_row, rhs);
+            out[row] = dot(lhs_row, &rhs);
         }
 
-        out
-    }
-}
-
-// Matrix-Vector Multiplication
-impl<S> Mul<&Vec<S>> for &Matrix<S>
-where
-    S: Scalar,
-{
-    type Output = Vec<S>;
-
-    // Standard matrix multiplication
-    fn mul(self, rhs: &Vec<S>) -> Vec<S> {
-        self.mul(rhs.as_slice())
+        out.into()
     }
 }
 
@@ -158,10 +136,10 @@ mod tests {
     #[test]
     fn matrix_vector_multiplication() {
         let a = mat![[1, 2, 3], [4, 5, 6]];
-        let b = vec![1, 2, 3];
+        let b = mat![1, 2, 3];
 
         let result = &a * &b;
 
-        assert_eq!(result, vec![1 * 1 + 2 * 2 + 3 * 3, 4 * 1 + 5 * 2 + 6 * 3]);
+        assert_eq!(result, mat![1 * 1 + 2 * 2 + 3 * 3, 4 * 1 + 5 * 2 + 6 * 3]);
     }
 }
