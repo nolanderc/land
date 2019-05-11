@@ -1,6 +1,19 @@
 use super::*;
 use crate::vector::{operations::dot, Vector};
 
+macro_rules! assert_equal_dimensions {
+    ($lhs:expr, $rhs:expr) => {
+        let lhs = $lhs.dimensions;
+        let rhs = $rhs.dimensions;
+        assert!(
+            lhs == rhs,
+            "Matrix dimensions must agree. Left hand side is of size {} and right hand side is of size {}",
+            lhs,
+            rhs
+        )
+    }
+}
+
 impl<S> Matrix<S>
 where
     S: Scalar,
@@ -84,6 +97,113 @@ where
         out.into()
     }
 }
+
+impl<S: Scalar> Mul<Vector<S>> for Matrix<S> {
+    type Output = Vector<S>;
+    fn mul(self, rhs: Vector<S>) -> Vector<S> {
+        (&self).mul(&rhs)
+    }
+}
+
+impl<S: Scalar> Mul<&Vector<S>> for Matrix<S> {
+    type Output = Vector<S>;
+    fn mul(self, rhs: &Vector<S>) -> Vector<S> {
+        (&self).mul(rhs)
+    }
+}
+
+impl<S: Scalar> Mul<Vector<S>> for &Matrix<S> {
+    type Output = Vector<S>;
+    fn mul(self, rhs: Vector<S>) -> Vector<S> {
+        self.mul(&rhs)
+    }
+}
+
+macro_rules! impl_elementwise_operator {
+    ($trait:ident, $fn:ident, $fn_assign:ident) => {
+        impl<S> $trait<&Matrix<S>> for Matrix<S>
+        where
+            S: Scalar,
+        {
+            type Output = Matrix<S>;
+
+            fn $fn(mut self, rhs: &Matrix<S>) -> Self::Output {
+                self.$fn_assign(rhs);
+                self
+            }
+        }
+
+        impl<S> $trait<&Matrix<S>> for &Matrix<S>
+        where
+            S: Scalar,
+        {
+            type Output = Matrix<S>;
+
+            fn $fn(self, rhs: &Matrix<S>) -> Self::Output {
+                let mut tmp = self.clone();
+                tmp.$fn_assign(rhs);
+                tmp
+            }
+        }
+
+        impl<S> $trait<Matrix<S>> for Matrix<S>
+        where
+            S: Scalar,
+        {
+            type Output = Matrix<S>;
+
+            fn $fn(mut self, rhs: Matrix<S>) -> Self::Output {
+                self.$fn_assign(&rhs);
+                self
+            }
+        }
+
+        impl<S> $trait<Matrix<S>> for &Matrix<S>
+        where
+            S: Scalar,
+        {
+            type Output = Matrix<S>;
+
+            fn $fn(self, rhs: Matrix<S>) -> Self::Output {
+                let mut tmp = self.clone();
+                tmp.$fn_assign(&rhs);
+                tmp
+            }
+        }
+    };
+}
+
+impl_elementwise_operator!(Add, add, add_assign);
+impl_elementwise_operator!(Sub, sub, sub_assign);
+
+macro_rules! impl_elementwise_assign {
+    ($trait:ident, $fn:ident) => {
+        impl<S> $trait<Matrix<S>> for Matrix<S>
+        where
+            S: Scalar,
+        {
+            fn $fn(&mut self, rhs: Matrix<S>) {
+                self.$fn(&rhs)
+            }
+        }
+
+        impl<S> $trait<&Matrix<S>> for Matrix<S>
+        where
+            S: Scalar,
+        {
+            fn $fn(&mut self, rhs: &Matrix<S>) {
+                assert_equal_dimensions!(self, rhs);
+
+                for (a, b) in self.elements.iter_mut().zip(rhs.elements.iter()) {
+                    a.$fn(*b)
+                }
+            }
+        }
+    };
+}
+
+impl_elementwise_assign!(AddAssign, add_assign);
+impl_elementwise_assign!(SubAssign, sub_assign);
 
 #[cfg(test)]
 mod tests {
