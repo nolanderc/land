@@ -21,6 +21,10 @@ impl<S> Vector<S> {
         self.elements.iter()
     }
 
+    pub fn into_iter(self) -> impl Iterator<Item = S> {
+        self.elements.into_iter()
+    }
+
     pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut S> {
         self.elements.iter_mut()
     }
@@ -35,6 +39,22 @@ where
         Vector {
             elements: vec![value; len],
         }
+    }
+}
+
+impl<S> Vector<S>
+where
+    S: Copy,
+{
+    pub fn map<F>(mut self, mut f: F) -> Vector<S>
+    where
+        F: FnMut(S) -> S,
+    {
+        for elem in self.elements.iter_mut() {
+            *elem = f(*elem);
+        }
+
+        self
     }
 }
 
@@ -102,31 +122,25 @@ mod tests {
 
     #[test]
     fn create_filled_vector() {
-        assert_eq!(
-            Vector::<i32>::filled(2, 3),
-            Vector {
-                elements: vec![2; 3]
-            }
-        )
+        assert_eq!(Vector::<i32>::filled(2, 3), mat![2, 2, 2])
     }
 
     #[test]
     fn create_zero_vector() {
-        assert_eq!(
-            Vector::<i32>::zeros(3),
-            Vector {
-                elements: vec![0; 3]
-            }
-        )
+        assert_eq!(Vector::<i32>::zeros(3), mat![0, 0, 0])
     }
 
     #[test]
     fn create_one_vector() {
-        assert_eq!(
-            Vector::<i32>::ones(3),
-            Vector {
-                elements: vec![1; 3]
-            }
-        )
+        assert_eq!(Vector::<i32>::ones(3), mat![1, 1, 1])
+    }
+
+    #[test]
+    fn map_add_one() {
+        let a = mat![1, 2, 3];
+
+        let result = a.map(|e| e + 1);
+
+        assert_eq!(result, mat![2, 3, 4])
     }
 }
