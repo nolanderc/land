@@ -147,6 +147,19 @@ impl_scalar_ops!(
     (i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64)
 );
 
+
+
+impl<S> Neg for Vector<S>
+where S: Scalar,
+{
+    type Output = Vector<S>;
+    fn neg(mut self) -> Vector<S> {
+        self.iter_mut().for_each(|s| *s = -*s);
+        self
+    }
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
