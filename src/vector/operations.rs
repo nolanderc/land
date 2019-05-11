@@ -134,10 +134,38 @@ macro_rules! impl_scalar_ops {
             }
         }
 
+        impl $trait<$scalar> for &Vector<$scalar> {
+            type Output = Vector<$scalar>;
+
+            fn $fn(self, rhs: $scalar) -> Self::Output {
+                let mut tmp = self.clone();
+
+                for i in 0..tmp.len() {
+                    tmp[i] = tmp[i].$fn(rhs);
+                }
+
+                tmp
+            }
+        }
+
         impl $trait<Vector<$scalar>> for $scalar {
             type Output = Vector<$scalar>;
 
             fn $fn(self, mut rhs: Vector<$scalar>) -> Self::Output {
+                for i in 0..rhs.len() {
+                    rhs[i] = self.$fn(rhs[i]);
+                }
+
+                rhs
+            }
+        }
+
+        impl $trait<&Vector<$scalar>> for $scalar {
+            type Output = Vector<$scalar>;
+
+            fn $fn(self, rhs: &Vector<$scalar>) -> Self::Output {
+                let mut rhs = rhs.clone();
+
                 for i in 0..rhs.len() {
                     rhs[i] = self.$fn(rhs[i]);
                 }
@@ -177,6 +205,18 @@ where
     fn neg(mut self) -> Vector<S> {
         self.iter_mut().for_each(|s| *s = -*s);
         self
+    }
+}
+
+impl<S> Neg for &Vector<S>
+where
+    S: Scalar,
+{
+    type Output = Vector<S>;
+    fn neg(self) -> Vector<S> {
+        let mut tmp = self.clone();
+        tmp.iter_mut().for_each(|s| *s = -*s);
+        tmp
     }
 }
 
