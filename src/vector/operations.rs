@@ -2,13 +2,13 @@ use super::*;
 
 macro_rules! assert_equal_length {
     ($lhs:expr, $rhs:expr) => {
-        let lhs = $lhs;
-        let rhs = $rhs;
+        let lhs = $lhs.len();
+        let rhs = $rhs.len();
         assert!(
-            lhs.len() == rhs.len(),
+            lhs == rhs,
             "Vectors must be of same length. Left hand side has length {} and right hand side has length {}",
-            lhs.len(),
-            rhs.len()
+            lhs,
+            rhs
         )
     }
 }
@@ -34,24 +34,68 @@ where
     }
 }
 
-impl<S> Add<Self> for &Vector<S>
-where
-    S: Scalar,
-{
-    type Output = Vector<S>;
+macro_rules! impl_elementwise {
+    ($trait:ident, $fn:ident) => {
+        impl<S> $trait<&Vector<S>> for Vector<S>
+        where
+            S: Scalar,
+        {
+            type Output = Vector<S>;
 
-    fn add(self, other: Self) -> Self::Output {
-        assert_equal_length!(self, other);
+            fn $fn(mut self, rhs: &Vector<S>) -> Self::Output {
+                assert_equal_length!(self, rhs);
 
-        let mut out = vec![S::zero(); self.len()];
+                for i in 0..self.len() {
+                    self[i] = self[i].$fn(rhs[i]);
+                }
 
-        for i in 0..self.len() {
-            out[i] = self[i] + other[i];
+                self
+            }
         }
 
-        out.into()
-    }
+        impl<S> $trait<Vector<S>> for &Vector<S>
+        where
+            S: Scalar,
+        {
+            type Output = Vector<S>;
+
+            fn $fn(self, mut rhs: Vector<S>) -> Self::Output {
+                assert_equal_length!(self, rhs);
+
+                for i in 0..self.len() {
+                    rhs[i] = self[i].$fn(rhs[i]);
+                }
+
+                rhs
+            }
+        }
+
+        impl<S> $trait<&Vector<S>> for &Vector<S>
+        where
+            S: Scalar,
+        {
+            type Output = Vector<S>;
+
+            fn $fn(self, rhs: &Vector<S>) -> Self::Output {
+                self.clone().$fn(rhs)
+            }
+        }
+
+        impl<S> $trait<Vector<S>> for Vector<S>
+        where
+            S: Scalar,
+        {
+            type Output = Vector<S>;
+
+            fn $fn(self, rhs: Vector<S>) -> Self::Output {
+                self.$fn(&rhs)
+            }
+        }
+    };
 }
+
+impl_elementwise!(Add, add);
+impl_elementwise!(Sub, sub);
 
 #[cfg(test)]
 mod tests {
@@ -72,8 +116,30 @@ mod tests {
         let a = mat![1, 2, 3];
         let b = mat![1, 2, 2];
 
-        let result = &a + &b;
+        let ref_ref = &a + &b;
+        let move_ref = a.clone() + &b;
+        let ref_move = &a + b.clone();
+        let move_move = a + b;
 
-        assert_eq!(result, mat![1 + 1, 2 + 2, 3 + 2]);
+        assert_eq!(move_ref, ref_ref);
+        assert_eq!(move_ref, ref_move);
+        assert_eq!(move_ref, move_move);
+        assert_eq!(move_ref, mat![1 + 1, 2 + 2, 3 + 2]);
+    }
+
+    #[test]
+    fn sub_small() {
+        let a = mat![1, 2, 3];
+        let b = mat![1, 2, 2];
+
+        let ref_ref = &a - &b;
+        let move_ref = a.clone() - &b;
+        let ref_move = &a - b.clone();
+        let move_move = a - b;
+
+        assert_eq!(move_ref, ref_ref);
+        assert_eq!(move_ref, ref_move);
+        assert_eq!(move_ref, move_move);
+        assert_eq!(move_ref, mat![1 - 1, 2 - 2, 3 - 2]);
     }
 }
