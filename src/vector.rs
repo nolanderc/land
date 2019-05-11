@@ -62,9 +62,9 @@ where
     }
 }
 
-impl<S, V> From<V> for Vector<S> where V: Into<Vec<S>> {
-    fn from(elements: V) -> Self {
-        Vector { elements: elements.into() }
+impl<S> From<Vec<S>> for Vector<S> {
+    fn from(elements: Vec<S>) -> Self {
+        Vector { elements }
     }
 }
 
