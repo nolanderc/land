@@ -1,6 +1,6 @@
 pub(crate) mod operations;
 
-use crate::traits::Scalar;
+use crate::traits::{FloatScalar, Scalar};
 use std::ops::*;
 
 #[derive(Debug, Clone)]
@@ -71,6 +71,92 @@ where
     pub fn ones(len: usize) -> Vector<S> {
         Self::filled(S::one(), len)
     }
+}
+
+
+macro_rules! impl_elementwise_operation {
+    ($name:ident ($($arg:ident: $type:ty),*)) => (
+        pub fn $name(self $(, $arg: $type)*) -> Vector<F> {
+            self.map(|e| e.$name($($arg),*))
+        }
+    )
+}
+
+impl<F> Vector<F>
+where
+    F: FloatScalar,
+{
+    /// Elementwise absolute value
+    impl_elementwise_operation!(abs());
+
+    /// Elementwise signum:
+    /// - `1.0` if the number is positive, `+0.0` or `F::infinity()`.
+    /// - `-1.0` if the number is negative, `-0.0` or `F::neg_infinity()`.
+    /// - `F::nan()` if the number is `F::nan()`.
+    impl_elementwise_operation!(signum());
+
+    /// Elementwise natural logarithm
+    impl_elementwise_operation!(ln());
+
+    /// Elementwise base of arbitrary base
+    impl_elementwise_operation!(log(base: F));
+
+    /// Elementwise base 2 logarithm
+    impl_elementwise_operation!(log2());
+
+    /// Elementwise base 10 logarithm
+    impl_elementwise_operation!(log10());
+
+    /// Raise to the power of an integer power elementwise
+    impl_elementwise_operation!(powi(n: i32));
+
+    /// Raise to the power of an integer power elementwise
+    impl_elementwise_operation!(powf(n: F));
+
+    /// Elementwise square root
+    impl_elementwise_operation!(sqrt());
+
+    /// Elementwise exponential function, `e^(self)`.
+    impl_elementwise_operation!(exp());
+
+    /// Elementwise `2^(self)`.
+    impl_elementwise_operation!(exp2());
+
+    /// Elementwise sine in radians
+    impl_elementwise_operation!(sin());
+
+    /// Elementwise cosine in radians
+    impl_elementwise_operation!(cos());
+
+    /// Elementwise tangent in radians
+    impl_elementwise_operation!(tan());
+
+    /// Elementwise arcsine in radians
+    impl_elementwise_operation!(asin());
+
+    /// Elementwise arccosine in radians
+    impl_elementwise_operation!(acos());
+
+    /// Elementwise arctangent in radians
+    impl_elementwise_operation!(atan());
+
+    /// Elementwise hyperbolic sine in radians
+    impl_elementwise_operation!(sinh());
+
+    /// Elementwise hyperbolic cosine in radians
+    impl_elementwise_operation!(cosh());
+
+    /// Elementwise hyperbolic tangent in radians
+    impl_elementwise_operation!(tanh());
+
+    /// Elementwise inverse hyperbolic sine in radians
+    impl_elementwise_operation!(asinh());
+
+    /// Elementwise inverse hyperbolic cosine in radians
+    impl_elementwise_operation!(acosh());
+
+    /// Elementwise inverse hyperbolic tangent in radians
+    impl_elementwise_operation!(atanh());
 }
 
 impl<S> PartialEq<Self> for Vector<S>

@@ -30,11 +30,6 @@ impl Dimensions {
     pub(crate) fn row_major(&self, row: usize, col: usize) -> usize {
         row * self.cols + col
     }
-
-    /// Convert a coordinate to an index into a column-major matrix.
-    pub(crate) fn column_major(&self, row: usize, col: usize) -> usize {
-        col * self.rows + row
-    }
 }
 
 impl From<(usize, usize)> for Dimensions {
