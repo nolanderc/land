@@ -1,3 +1,5 @@
+use std::fmt;
+
 /// The dimensions of a matrix
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct Dimensions {
@@ -44,5 +46,11 @@ impl From<(usize, usize)> for Dimensions {
 impl From<[usize; 2]> for Dimensions {
     fn from([rows, cols]: [usize; 2]) -> Dimensions {
         Dimensions { rows, cols }
+    }
+}
+
+impl fmt::Display for Dimensions {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}x{}", self.rows, self.cols)
     }
 }

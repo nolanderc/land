@@ -28,7 +28,7 @@ where
         .fold(S::zero(), |acc, t| acc + t)
 }
 
-// Multiplication
+// Matrix-Matrix Multiplication
 impl<S> Mul<Self> for &Matrix<S>
 where
     S: Scalar,
@@ -37,6 +37,13 @@ where
 
     // Standard matrix multiplication
     fn mul(self, rhs: Self) -> Matrix<S> {
+        assert!(
+            self.dimensions.cols == rhs.dimensions.rows,
+            "Matrix dimensions must agree. Left hand side is {} and right hand side is {}",
+            self.dimensions,
+            rhs.dimensions,
+        );
+
         let rhs_transpose = rhs.transpose();
 
         let out_dimensions = Dimensions {
@@ -56,6 +63,47 @@ where
         }
 
         out
+    }
+}
+
+// Matrix-Vector Multiplication
+impl<S> Mul<&[S]> for &Matrix<S>
+where
+    S: Scalar,
+{
+    type Output = Vec<S>;
+
+    // Standard matrix multiplication
+    fn mul(self, rhs: &[S]) -> Vec<S> {
+        assert!(
+            self.dimensions.cols == rhs.len(),
+            "Matrix dimensions must agree. Left hand side is {} and right hand side has length {}",
+            self.dimensions,
+            rhs.len(),
+        );
+
+        let mut out = vec![S::zero(); self.dimensions.rows];
+
+        for row in 0..self.dimensions.rows {
+            let lhs_row = &self[row];
+
+            out[row] = dot(lhs_row, rhs);
+        }
+
+        out
+    }
+}
+
+// Matrix-Vector Multiplication
+impl<S> Mul<&Vec<S>> for &Matrix<S>
+where
+    S: Scalar,
+{
+    type Output = Vec<S>;
+
+    // Standard matrix multiplication
+    fn mul(self, rhs: &Vec<S>) -> Vec<S> {
+        self.mul(rhs.as_slice())
     }
 }
 
@@ -105,5 +153,15 @@ mod tests {
                 [3 * 5 + 4 * 7, 3 * 6 + 4 * 8]
             ]
         );
+    }
+
+    #[test]
+    fn matrix_vector_multiplication() {
+        let a = mat![[1, 2, 3], [4, 5, 6]];
+        let b = vec![1, 2, 3];
+
+        let result = &a * &b;
+
+        assert_eq!(result, vec![1 * 1 + 2 * 2 + 3 * 3, 4 * 1 + 5 * 2 + 6 * 3]);
     }
 }
