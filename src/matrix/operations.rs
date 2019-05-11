@@ -205,6 +205,75 @@ macro_rules! impl_elementwise_assign {
 impl_elementwise_assign!(AddAssign, add_assign);
 impl_elementwise_assign!(SubAssign, sub_assign);
 
+macro_rules! impl_scalar_operators {
+    ($trait:ident, $fn:ident, ($($scalar:ty),+)) => (
+        $(
+            impl_scalar_operators!($trait, $fn, $scalar);
+        )+
+    );
+
+    ($trait:ident, $fn:ident, $scalar:ty) => (
+        impl $trait<$scalar> for Matrix<$scalar> {
+            type Output = Matrix<$scalar>;
+
+            fn $fn(mut self, rhs: $scalar) -> Self::Output {
+                self.elements.iter_mut().for_each(|e| *e = e.$fn(rhs));
+                self
+            }
+        }
+
+        impl $trait<$scalar> for &Matrix<$scalar> {
+            type Output = Matrix<$scalar>;
+
+            fn $fn(self, rhs: $scalar) -> Self::Output {
+                let mut tmp = self.clone();
+                tmp.elements.iter_mut().for_each(|e| *e = e.$fn(rhs));
+                tmp
+            }
+        }
+
+        impl $trait<Matrix<$scalar>> for $scalar {
+            type Output = Matrix<$scalar>;
+
+            fn $fn(self, mut rhs: Matrix<$scalar>) -> Self::Output {
+                rhs.elements.iter_mut().for_each(|e| *e = e.$fn(self));
+                rhs
+            }
+        }
+
+        impl $trait<&Matrix<$scalar>> for $scalar {
+            type Output = Matrix<$scalar>;
+
+            fn $fn(self, rhs: &Matrix<$scalar>) -> Self::Output {
+                let mut rhs = rhs.clone();
+                rhs.elements.iter_mut().for_each(|e| *e = e.$fn(self));
+                rhs
+            }
+        }
+    );
+}
+
+impl_scalar_operators!(
+    Add,
+    add,
+    (i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64)
+);
+impl_scalar_operators!(
+    Sub,
+    sub,
+    (i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64)
+);
+impl_scalar_operators!(
+    Mul,
+    mul,
+    (i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64)
+);
+impl_scalar_operators!(
+    Div,
+    div,
+    (i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64)
+);
+
 #[cfg(test)]
 mod tests {
     use super::*;
