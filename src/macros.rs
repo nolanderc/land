@@ -1,4 +1,3 @@
-
 #[macro_export]
 macro_rules! mat {
     [$([$($elem:expr),+]),+] => {
@@ -9,4 +8,3 @@ macro_rules! mat {
         ])
     }
 }
-

@@ -22,17 +22,13 @@ where
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn index_rect() {
-        let a: Matrix<i32> = mat![
-            [1, 2, 3],
-            [4, 5, 6]
-        ];
+        let a: Matrix<i32> = mat![[1, 2, 3], [4, 5, 6]];
 
         assert_eq!(a[0][0], 1);
         assert_eq!(a[0][1], 2);
@@ -42,4 +38,3 @@ mod tests {
         assert_eq!(a[1][2], 6);
     }
 }
-

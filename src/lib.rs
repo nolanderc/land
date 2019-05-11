@@ -5,4 +5,3 @@ mod traits;
 
 pub use matrix::*;
 pub use traits::*;
-
