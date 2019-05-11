@@ -96,6 +96,8 @@ macro_rules! impl_elementwise {
 
 impl_elementwise!(Add, add);
 impl_elementwise!(Sub, sub);
+impl_elementwise!(Mul, mul);
+impl_elementwise!(Div, div);
 
 macro_rules! impl_scalar_ops {
     ($trait:ident, $fn:ident, ($($scalar:ty),+)) => (
