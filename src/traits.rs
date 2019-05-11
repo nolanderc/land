@@ -1,5 +1,5 @@
 use num::{traits::NumAssign, Float, Num};
-use std::{ops::Neg, fmt::Debug};
+use std::{fmt::Debug, ops::Neg};
 
 /// A scalar value
 pub trait Scalar: Num + Neg<Output = Self> + NumAssign + Debug + Copy + Clone + Sized {}

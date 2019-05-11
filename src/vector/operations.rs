@@ -169,10 +169,9 @@ impl_scalar_ops!(
     (i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64)
 );
 
-
-
 impl<S> Neg for Vector<S>
-where S: Scalar,
+where
+    S: Scalar,
 {
     type Output = Vector<S>;
     fn neg(mut self) -> Vector<S> {
@@ -180,7 +179,6 @@ where S: Scalar,
         self
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -203,11 +201,7 @@ mod tests {
 
         let result = a.mul_transpose(&b);
 
-        assert_eq!(result, mat![
-                   [1*4, 1*5],
-                   [2*4, 2*5],
-                   [3*4, 3*5]
-        ]);
+        assert_eq!(result, mat![[1 * 4, 1 * 5], [2 * 4, 2 * 5], [3 * 4, 3 * 5]]);
     }
 
     #[test]
