@@ -13,7 +13,6 @@ macro_rules! assert_equal_length {
     }
 }
 
-
 pub fn dot<S>(lhs: &[S], rhs: &[S]) -> S
 where
     S: Scalar,
@@ -75,6 +74,6 @@ mod tests {
 
         let result = &a + &b;
 
-        assert_eq!(result, mat![1+1, 2+2, 3+2]);
+        assert_eq!(result, mat![1 + 1, 2 + 2, 3 + 2]);
     }
 }

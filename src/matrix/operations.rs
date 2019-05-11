@@ -1,5 +1,5 @@
 use super::*;
-use crate::vector::{Vector, operations::dot};
+use crate::vector::{operations::dot, Vector};
 
 impl<S> Matrix<S>
 where

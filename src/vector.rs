@@ -1,7 +1,7 @@
 pub(crate) mod operations;
 
-use std::ops::*;
 use crate::traits::Scalar;
+use std::ops::*;
 
 #[derive(Debug, Clone)]
 pub struct Vector<S> {
@@ -17,11 +17,11 @@ impl<S> Vector<S> {
         self.elements.len()
     }
 
-    pub fn iter(&self) -> impl Iterator<Item=&S> {
+    pub fn iter(&self) -> impl Iterator<Item = &S> {
         self.elements.iter()
     }
 
-    pub fn iter_mut(&mut self) -> impl Iterator<Item=&mut S> {
+    pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut S> {
         self.elements.iter_mut()
     }
 }
@@ -82,7 +82,6 @@ impl<S> AsRef<[S]> for Vector<S> {
     }
 }
 
-
 impl<S> Index<usize> for Vector<S> {
     type Output = S;
 
@@ -103,16 +102,31 @@ mod tests {
 
     #[test]
     fn create_filled_vector() {
-        assert_eq!(Vector::<i32>::filled(2, 3), Vector { elements: vec![2; 3] })
+        assert_eq!(
+            Vector::<i32>::filled(2, 3),
+            Vector {
+                elements: vec![2; 3]
+            }
+        )
     }
 
     #[test]
     fn create_zero_vector() {
-        assert_eq!(Vector::<i32>::zeros(3), Vector { elements: vec![0; 3] })
+        assert_eq!(
+            Vector::<i32>::zeros(3),
+            Vector {
+                elements: vec![0; 3]
+            }
+        )
     }
 
     #[test]
     fn create_one_vector() {
-        assert_eq!(Vector::<i32>::ones(3), Vector { elements: vec![1; 3] })
+        assert_eq!(
+            Vector::<i32>::ones(3),
+            Vector {
+                elements: vec![1; 3]
+            }
+        )
     }
 }
