@@ -22,7 +22,6 @@ where
     }
 }
 
-
 impl<S> Index<[usize; 2]> for Matrix<S>
 where
     S: Scalar,
@@ -46,7 +45,6 @@ where
         self.elements.index_mut(index)
     }
 }
-
 
 #[cfg(test)]
 mod tests {

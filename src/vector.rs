@@ -73,7 +73,6 @@ where
     }
 }
 
-
 macro_rules! impl_elementwise_operation {
     ($name:ident ($($arg:ident: $type:ty),*)) => (
         pub fn $name(self $(, $arg: $type)*) -> Vector<F> {
