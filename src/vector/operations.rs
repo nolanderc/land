@@ -1,4 +1,5 @@
 use super::*;
+use crate::matrix::Matrix;
 
 macro_rules! assert_equal_length {
     ($lhs:expr, $rhs:expr) => {
@@ -31,6 +32,20 @@ where
 {
     pub fn dot(&self, other: &Self) -> S {
         dot(&self, &other)
+    }
+
+    /// Perform matrix multiplication between a column and row vector so that for
+    /// `let m = a.mul_transpose(b)` the resulting matrix `m` fulfills `m[r][c] = a[r]*b[c]`
+    pub fn mul_transpose(&self, other: &Vector<S>) -> Matrix<S> {
+        let mut out = Matrix::zeros([self.len(), other.len()].into());
+
+        for i in 0..self.len() {
+            for j in 0..other.len() {
+                out[i][j] = self[i] * other[j];
+            }
+        }
+
+        out
     }
 }
 
@@ -179,6 +194,20 @@ mod tests {
         let result = a.dot(&b);
 
         assert_eq!(result, 1 * 1 + 2 * 2 + 3 * 2);
+    }
+
+    #[test]
+    fn mul_transpose() {
+        let a = mat![1, 2, 3];
+        let b = mat![4, 5];
+
+        let result = a.mul_transpose(&b);
+
+        assert_eq!(result, mat![
+                   [1*4, 1*5],
+                   [2*4, 2*5],
+                   [3*4, 3*5]
+        ]);
     }
 
     #[test]
