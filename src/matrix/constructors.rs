@@ -1,7 +1,7 @@
 use super::*;
 
 impl<S> Matrix<S> {
-    /// Create a new matrix from a row-major format
+    /// Create a new matrix from a list of rows
     pub fn new<V>(rows: V) -> Matrix<S>
     where
         V: Into<Vec<Vec<S>>>,
@@ -21,6 +21,43 @@ impl<S> Matrix<S> {
         };
 
         let elements = rows.into_iter().map(Vec::into_iter).flatten().collect();
+
+        Matrix {
+            elements,
+            dimensions,
+        }
+    }
+
+
+    /// Create a new matrix from a row-major format.
+    /// ```
+    /// # use land::{Dimensions, Matrix, mat};
+    /// # fn main() {
+    /// let elements = vec![1, 2, 3, 4, 5, 6];
+    /// let dimensions = Dimensions { rows: 2, cols: 3 };
+    /// let matrix = Matrix::from_row_major(dimensions, elements);
+    ///
+    /// assert_eq!(
+    ///     matrix,
+    ///     mat![
+    ///         [1, 2, 3],
+    ///         [4, 5, 6]
+    ///     ]
+    /// );
+    /// # }
+    /// ```
+    pub fn from_row_major<V>(dimensions: Dimensions, elements: V) -> Matrix<S>
+    where
+        V: Into<Vec<S>>,
+    {
+        let elements = elements.into();
+
+        assert!(
+            elements.len() == dimensions.elements(),
+            "Number of elements must match matrix dimensions. Number of elements was {} and dimensions {}",
+            elements.len(),
+            dimensions.elements()
+        );
 
         Matrix {
             elements,
