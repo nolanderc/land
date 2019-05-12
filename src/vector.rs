@@ -9,8 +9,8 @@ pub struct Vector<S> {
 }
 
 impl<S> Vector<S> {
-    pub fn new<V>(elements: V) -> Vector<S> where V: Into<Vec<S>> {
-        Vector { elements: elements.into() }
+    pub fn new(elements: Vec<S>) -> Vector<S> {
+        Vector { elements }
     }
 
     pub fn len(&self) -> usize {

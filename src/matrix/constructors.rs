@@ -28,7 +28,6 @@ impl<S> Matrix<S> {
         }
     }
 
-
     /// Create a new matrix from a row-major format.
     /// ```
     /// # use land::{Dimensions, Matrix, mat};
@@ -46,12 +45,7 @@ impl<S> Matrix<S> {
     /// );
     /// # }
     /// ```
-    pub fn from_row_major<V>(dimensions: Dimensions, elements: V) -> Matrix<S>
-    where
-        V: Into<Vec<S>>,
-    {
-        let elements = elements.into();
-
+    pub fn from_row_major(dimensions: Dimensions, elements: Vec<S>) -> Matrix<S> {
         assert!(
             elements.len() == dimensions.elements(),
             "Number of elements must match matrix dimensions. Number of elements was {} and dimensions {}",
