@@ -276,8 +276,6 @@ impl_scalar_operators!(
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[test]
     fn transpose_square() {
         let a = mat![[1, 2, 3], [4, 5, 6], [7, 8, 9]];

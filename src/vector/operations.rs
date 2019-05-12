@@ -292,8 +292,6 @@ where
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[test]
     fn dot_product_small() {
         let a = mat![1, 2, 3];

@@ -1,7 +1,7 @@
 pub(crate) mod operations;
 
 use crate::traits::{FloatScalar, Scalar};
-use std::ops::*;
+use std::{fmt, ops::*};
 
 #[derive(Debug, Clone)]
 pub struct Vector<S> {
@@ -207,6 +207,23 @@ impl<S> Index<usize> for Vector<S> {
 impl<S> IndexMut<usize> for Vector<S> {
     fn index_mut(&mut self, index: usize) -> &mut S {
         self.elements.index_mut(index)
+    }
+}
+
+impl<S> fmt::Display for Vector<S>
+where
+    S: fmt::Display,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "[")?;
+        for i in 0..self.len() {
+            write!(f, "{}", self[i])?;
+
+            if i != self.len() - 1 {
+                write!(f, ", ")?;
+            }
+        }
+        writeln!(f, "]")
     }
 }
 

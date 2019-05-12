@@ -3,11 +3,9 @@ mod dimensions;
 mod index;
 mod operations;
 
-use std::ops::*;
-
-use crate::traits::Scalar;
-
 pub use self::dimensions::*;
+use crate::traits::Scalar;
+use std::{fmt, ops::*};
 
 /// A row major matrix
 #[derive(Debug, Clone)]
@@ -53,6 +51,31 @@ where
     }
 }
 
+impl<S> fmt::Display for Matrix<S>
+where
+    S: fmt::Display,
+{
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        writeln!(f, "[")?;
+        for row in 0..self.dimensions.rows {
+            write!(f, "    [")?;
+            for col in 0..self.dimensions.cols {
+                write!(f, "{}", self.row(row)[col])?;
+
+                if col != self.dimensions.cols - 1 {
+                    write!(f, ", ")?;
+                }
+            }
+            if row == self.dimensions.rows - 1 {
+                writeln!(f, "]")?;
+            } else {
+                writeln!(f, "],")?;
+            }
+        }
+        writeln!(f, "]")
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -94,6 +117,22 @@ mod tests {
         assert_eq!(
             Matrix::<i32>::identity(4),
             mat![[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+        )
+    }
+
+    #[test]
+    fn display_matrix() {
+        let mat = mat![[1, 2, 3], [4, 5, 6]];
+
+        let out = format!("{}", mat);
+
+        assert_eq!(
+            out,
+            "[
+    [1, 2, 3],
+    [4, 5, 6]
+]
+"
         )
     }
 }
