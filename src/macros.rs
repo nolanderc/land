@@ -1,7 +1,7 @@
 #[macro_export]
 macro_rules! mat {
     [$([$($elem:expr),+]),+] => {
-        Matrix::new(vec![
+        $crate::Matrix::new(vec![
             $(
                 vec![$($elem),+].into()
             ),+
@@ -9,6 +9,6 @@ macro_rules! mat {
     };
 
     [$($elem:expr),+] => {
-        Vector::new(vec![ $( $elem ),+ ])
+        $crate::Vector::new(vec![ $( $elem ),+ ])
     }
 }
