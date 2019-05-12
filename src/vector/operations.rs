@@ -114,6 +114,37 @@ impl_elementwise!(Sub, sub);
 impl_elementwise!(Mul, mul);
 impl_elementwise!(Div, div);
 
+macro_rules! impl_elementwise_assign {
+    ($trait:ident, $fn:ident) => {
+        impl<S> $trait<&Vector<S>> for Vector<S>
+        where
+            S: Scalar,
+        {
+            fn $fn(&mut self, rhs: &Vector<S>) {
+                assert_equal_length!(self, rhs);
+
+                for (a, b) in self.elements.iter_mut().zip(rhs.elements.iter()) {
+                    a.$fn(*b)
+                }
+            }
+        }
+
+        impl<S> $trait<Vector<S>> for Vector<S>
+        where
+            S: Scalar,
+        {
+            fn $fn(&mut self, rhs: Vector<S>) {
+                self.$fn(&rhs)
+            }
+        }
+    };
+}
+
+impl_elementwise_assign!(AddAssign, add_assign);
+impl_elementwise_assign!(SubAssign, sub_assign);
+impl_elementwise_assign!(MulAssign, mul_assign);
+impl_elementwise_assign!(DivAssign, div_assign);
+
 macro_rules! impl_scalar_ops {
     ($trait:ident, $fn:ident, ($($scalar:ty),+)) => (
         $(
@@ -194,6 +225,45 @@ impl_scalar_ops!(
 impl_scalar_ops!(
     Div,
     div,
+    (i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64)
+);
+
+macro_rules! impl_scalar_assign_ops {
+    ($trait:ident, $fn:ident, ($($scalar:ty),+)) => (
+        $(
+            impl_scalar_assign_ops!($trait, $fn, $scalar);
+        )+
+    );
+
+    ($trait:ident, $fn:ident, $scalar:ty) => (
+        impl $trait<$scalar> for Vector<$scalar> {
+            fn $fn(&mut self, rhs: $scalar) {
+                for e in self.elements.iter_mut() {
+                    e.$fn(rhs)
+                }
+            }
+        }
+    );
+}
+
+impl_scalar_assign_ops!(
+    AddAssign,
+    add_assign,
+    (i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64)
+);
+impl_scalar_assign_ops!(
+    SubAssign,
+    sub_assign,
+    (i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64)
+);
+impl_scalar_assign_ops!(
+    MulAssign,
+    mul_assign,
+    (i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64)
+);
+impl_scalar_assign_ops!(
+    DivAssign,
+    div_assign,
     (i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64)
 );
 
@@ -302,5 +372,19 @@ mod tests {
         let a = mat![1, 2, 3];
         let result = 2 * a;
         assert_eq!(result, mat![2, 4, 6]);
+    }
+
+    #[test]
+    fn vec_add_assign_scalar() {
+        let mut a = mat![1, 2, 3];
+        a += 2;
+        assert_eq!(a, mat![3, 4, 5]);
+    }
+
+    #[test]
+    fn vec_mul_assign_scalar() {
+        let mut a = mat![1, 2, 3];
+        a *= 2;
+        assert_eq!(a, mat![2, 4, 6]);
     }
 }
