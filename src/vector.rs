@@ -217,7 +217,7 @@ where
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "[")?;
         for i in 0..self.len() {
-            write!(f, "{}", self[i])?;
+            self[i].fmt(f)?;
 
             if i != self.len() - 1 {
                 write!(f, ", ")?;
@@ -253,5 +253,17 @@ mod tests {
         let result = a.map(|e| e + 1);
 
         assert_eq!(result, mat![2, 3, 4])
+    }
+
+    #[test]
+    fn display_vector() {
+        let mat = mat![1.234, 1.0/3.0, 7.0001];
+
+        let out = format!("{:.2}", mat);
+
+        assert_eq!(
+            out,
+            "[1.23, 0.33, 7.00]"
+        )
     }
 }

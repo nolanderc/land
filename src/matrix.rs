@@ -60,7 +60,7 @@ where
         for row in 0..self.dimensions.rows {
             write!(f, "    [")?;
             for col in 0..self.dimensions.cols {
-                write!(f, "{}", self.row(row)[col])?;
+                self.row(row)[col].fmt(f)?;
 
                 if col != self.dimensions.cols - 1 {
                     write!(f, ", ")?;
