@@ -223,7 +223,7 @@ where
                 write!(f, ", ")?;
             }
         }
-        writeln!(f, "]")
+        write!(f, "]")
     }
 }
 
