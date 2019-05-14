@@ -128,8 +128,29 @@ macro_rules! impl_elementwise_assign {
                 }
             }
         }
-
         impl<S> $trait<Vector<S>> for Vector<S>
+        where
+            S: Scalar,
+        {
+            fn $fn(&mut self, rhs: Vector<S>) {
+                self.$fn(&rhs)
+            }
+        }
+
+        impl<S> $trait<&Vector<S>> for &mut Vector<S>
+        where
+            S: Scalar,
+        {
+            fn $fn(&mut self, rhs: &Vector<S>) {
+                assert_equal_length!(self, rhs);
+
+                for (a, b) in self.elements.iter_mut().zip(rhs.elements.iter()) {
+                    a.$fn(*b)
+                }
+            }
+        }
+
+        impl<S> $trait<Vector<S>> for &mut Vector<S>
         where
             S: Scalar,
         {
