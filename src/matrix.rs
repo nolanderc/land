@@ -25,6 +25,16 @@ impl<S> Matrix<S> {
         self.dimensions
     }
 
+    /// Return an iterator through each element of the matrix, row by row.
+    pub fn iter_rows(&self) -> impl Iterator<Item = &S> {
+        self.elements.iter()
+    }
+
+    /// Return an iterator through each element of the matrix, row by row.
+    pub fn into_iter_rows(self) -> impl Iterator<Item = S> {
+        self.elements.into_iter()
+    }
+
     /// Get a row of the matrix
     pub fn row(&self, row: usize) -> &[S] {
         let row_start = self.dimensions.row_major(row, 0);

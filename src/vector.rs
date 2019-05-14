@@ -28,6 +28,10 @@ impl<S> Vector<S> {
     pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut S> {
         self.elements.iter_mut()
     }
+
+    pub fn to_vec(self) -> Vec<S> {
+        self.elements
+    }
 }
 
 impl<S> Vector<S>
@@ -179,6 +183,12 @@ where
 impl<S> From<Vec<S>> for Vector<S> {
     fn from(elements: Vec<S>) -> Self {
         Vector { elements }
+    }
+}
+
+impl<S> Into<Vec<S>> for Vector<S> {
+    fn into(self) -> Vec<S> {
+        self.elements
     }
 }
 
